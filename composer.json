@@ -1,0 +1,21 @@
+{
+    "name": "lvht/jaeger",
+    "description": "php client for jaeger",
+    "keywords": ["jaeger","trace","opentracing"],
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^7",
+        "packaged/thrift" : "0.10.0",
+        "opentracing/opentracing" : "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jaeger\\": "src"
+        }
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^6.3"
+    }
+}

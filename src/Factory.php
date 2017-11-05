@@ -51,7 +51,7 @@ class Factory
      *
      * @throws \InvalidArgumentException
      */
-    public function initTrace(string $serverName,
+    public function initTracer(string $serverName,
         string $host = '127.0.0.1', int $port = 6831) : Tracer
     {
         if (self::$disabled) {
@@ -104,16 +104,5 @@ class Factory
         $this->sampler = $sampler;
 
         return $this;
-    }
-
-    public function flushTrace()
-    {
-        foreach (self::$trace as $trace) {
-            $trace->reportSpan();
-        }
-
-        $this->reporter->close();
-
-        return true;
     }
 }

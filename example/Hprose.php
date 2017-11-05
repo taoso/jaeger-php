@@ -10,15 +10,15 @@ use OpenTracing\SpanReference;
 //init server span start
 $factory = Factory::getInstance();
 
-$trace = $factory->initTrace('user');
+$tracer = $factory->initTracer('user');
 
-$serverSpan = $trace->startSpan('example HTTP', []);
+$serverSpan = $tracer->startSpan('example HTTP', []);
 
 $client = new Client;
-$clientSapn = $trace->startSpan('get', ['child_of' => $serverSpan]);
+$clientSapn = $tracer->startSpan('get', ['child_of' => $serverSpan]);
 
 $textMap = TextMap::fromArray([]);
-$trace->inject($clientSapn->getContext(), 'text_map', $textMap);
+$tracer->inject($clientSapn->getContext(), 'text_map', $textMap);
 $injectTarget = $textMap->getIterator()->getArrayCopy();
 
 $url = 'http://127.0.0.1:8080';
@@ -33,7 +33,7 @@ $clientSapn->setTags(['http.status' => $result->getStatusCode()]);
 $clientSapn->setTags(['http.result' => $result->getBody()]);
 $clientSapn->finish();
 
-$clientSapn = $trace->startSpan('get', ['child_of' => $serverSpan]);
+$clientSapn = $tracer->startSpan('get', ['child_of' => $serverSpan]);
 
 $url = 'http://myip.ipip.net';
 $result = $client->get($url);
@@ -45,9 +45,7 @@ $clientSapn->setTags(['http.status' => $result->getStatusCode()]);
 $clientSapn->setTags(['http.result' => (string)$result->getBody()]);
 $clientSapn->finish();
 
-//server span end
 $serverSpan->finish();
-//trace flush
-$factory->flushTrace();
+$tracer->flush();
 
 echo "success\r\n";

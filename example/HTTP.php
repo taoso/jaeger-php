@@ -11,15 +11,15 @@ use OpenTracing\SpanReference;
 //init server span start
 $factory = Factory::getInstance();
 
-$trace = $factory->initTrace('gift');
+$tracer = $factory->initTracer('gift');
 
 $injectTarget = [\Jaeger\Helper::TRACE_HEADER_NAME => $_SERVER['HTTP_UBER_TRACE_ID']];
 $textMap = TextMap::fromArray($injectTarget);
-$spanContext = $trace->extract('text_map', $textMap);
-$serverSpan = $trace->startSpan('bar HTTP', ['child_of' => $spanContext]);
+$spanContext = $tracer->extract('text_map', $textMap);
+$serverSpan = $tracer->startSpan('bar HTTP', ['child_of' => $spanContext]);
 
 $injectTarget1 = [];
-$clientSapn1 = $trace->startSpan('HTTP1', ['child_of' => $serverSpan->getContext()]);
+$clientSapn1 = $tracer->startSpan('HTTP1', ['child_of' => $serverSpan->getContext()]);
 
 $method = 'GET';
 $url = 'http://myip.ipip.net';
@@ -32,7 +32,7 @@ $clientSapn1->finish();
 //client span1 end
 
 //client span2 start
-$clientSpan2 = $trace->startSpan('HTTP2', ['child_of' => $serverSpan->getContext()]);
+$clientSpan2 = $tracer->startSpan('HTTP2', ['child_of' => $serverSpan->getContext()]);
 
 $method = 'GET';
 $url = 'http://myip.ipip.net';
@@ -46,7 +46,6 @@ $clientSpan2->finish();
 
 //server span end
 $serverSpan->finish();
-//trace flush
-$factory->flushTrace();
+$tracer->flush();
 
 echo "success\r\n";

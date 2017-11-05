@@ -1,10 +1,14 @@
 # jaeger-php
 
-Jaeger UDP client for PHP. Forked from [jukylin/jaeger-php](https://github.com/jukylin/jaeger-php).
+Jaeger UDP client for PHP OpenTracing API.
+
+Forked from [jukylin/jaeger-php](https://github.com/jukylin/jaeger-php).
 
 ## Why fork?
 
-Jukylin's work is awesome. This repo is huge refactor for simplicity and psr.
+Jukylin's work is awesome. But it doese not work with the latest [opentracing/opentracing-php](https://github.com/opentracing/opentracing-php).
+
+This repo fix its issue and make a huge refactor for simplicity and psr.
 
 Feel free to choose this repo or Jukylin's.
 

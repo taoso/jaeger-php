@@ -8,7 +8,7 @@
     "require": {
         "php": "^7",
         "packaged/thrift" : "0.10.0",
-        "opentracing/opentracing" : "dev-master"
+        "opentracing/opentracing" : "dev-master#88ad53393dd3dff3c1d9698f72ec42a907eb4054"
     },
     "autoload": {
         "psr-4": {

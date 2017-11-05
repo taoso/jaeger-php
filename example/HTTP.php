@@ -4,9 +4,7 @@ require __DIR__.'/../vendor/autoload.php';
 
 use Jaeger\Factory;
 use GuzzleHttp\Client;
-use OpenTracing\Propagator;
 use OpenTracing\Carriers\TextMap;
-use OpenTracing\SpanReference;
 
 //init server span start
 $factory = Factory::getInstance();

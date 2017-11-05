@@ -28,8 +28,6 @@ class Factory
      */
     private $sampler;
 
-    private $gen128bit = false;
-
     /**
      * @var Jaeger[]
      */
@@ -82,10 +80,6 @@ class Factory
 
         $trace = new Jaeger($serverName, $this->reporter, $this->sampler);
 
-        if ($this->gen128bit) {
-            $trace->gen128bit();
-        }
-
         self::$trace[$serverName] = $trace;
 
         return $trace;
@@ -108,13 +102,6 @@ class Factory
     public function setSampler(Sampler $sampler) : self
     {
         $this->sampler = $sampler;
-
-        return $this;
-    }
-
-    public function gen128bit() : self
-    {
-        $this->gen128bit = true;
 
         return $this;
     }

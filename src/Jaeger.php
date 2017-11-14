@@ -67,7 +67,7 @@ class Jaeger implements Tracer
             $context = new JSpanContext($parent->traceId, $id, $parent->spanId, $parent->flags);
         } else {
             $traceId = $spanId = Helper::toHex(Helper::identifier());
-            $flags = $this->sampler->IsSampled();
+            $flags = (int)$this->sampler->IsSampled();
 
             $context = new JSpanContext($traceId, $spanId, 0, $flags);
         }

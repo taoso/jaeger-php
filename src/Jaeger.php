@@ -131,7 +131,7 @@ class Jaeger implements Tracer
     public function buildProcessThrift()
     {
         if ($this->processThrift) {
-            return $processThrift;
+            return $this->processThrift;
         }
 
         $tagsObj = Tags::getInstance();

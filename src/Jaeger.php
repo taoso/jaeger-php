@@ -5,9 +5,7 @@ namespace Jaeger;
 use OpenTracing\Span;
 use OpenTracing\SpanContext;
 use OpenTracing\SpanOptions;
-use OpenTracing\Propagation\Formats;
-use OpenTracing\Propagation\Reader;
-use OpenTracing\Propagation\Writer;
+use OpenTracing\Formats;
 use OpenTracing\Tracer;
 use Jaeger\Sampler\Sampler;
 use Jaeger\Reporter\Reporter;
@@ -82,23 +80,20 @@ class Jaeger implements Tracer
         return $span;
     }
 
-    public function inject(SpanContext $spanContext, $format, Writer $carrier)
+    public function inject(SpanContext $spanContext, $format, &$carrier)
     {
         if ($format == Formats\TEXT_MAP) {
-            $carrier->set(Helper::TRACE_HEADER_NAME, $spanContext->buildString());
+            $carrier = $spanContext->buildString();
         } else {
             throw new Exception("not support format");
         }
     }
 
-    public function extract($format, Reader $carrier)
+    public function extract($format, $carrier)
     {
-        if ($format == Formats\TEXT_MAP) {
-            $carrierInfo = $carrier->getIterator();
-            if (isset($carrierInfo[Helper::TRACE_HEADER_NAME]) && $carrierInfo[Helper::TRACE_HEADER_NAME]) {
-                list($traceId, $spanId, $parentId, $flags) = explode(':', $carrierInfo[Helper::TRACE_HEADER_NAME]);
-                return new JSpanContext($traceId, $spanId, $parentId, $flags);
-            }
+        if ($format == Formats\TEXT_MAP && is_string($carrier)) {
+            list($traceId, $spanId, $parentId, $flags) = explode(':', $carrier);
+            return new JSpanContext($traceId, $spanId, $parentId, $flags);
 
             return new JSpanContext(0, 0, 0, 0);
         } else {

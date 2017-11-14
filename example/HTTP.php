@@ -4,19 +4,17 @@ require __DIR__.'/../vendor/autoload.php';
 
 use Jaeger\Factory;
 use GuzzleHttp\Client;
-use OpenTracing\Carriers\TextMap;
+use OpenTracing\Formats;
 
 //init server span start
 $factory = Factory::getInstance();
 
 $tracer = $factory->initTracer('gift');
 
-$injectTarget = [\Jaeger\Helper::TRACE_HEADER_NAME => $_SERVER['HTTP_UBER_TRACE_ID']];
-$textMap = TextMap::fromArray($injectTarget);
-$spanContext = $tracer->extract('text_map', $textMap);
+$trace_id = $_SERVER['HTTP_MY_TRACE_ID'];
+$spanContext = $tracer->extract(Formats\TEXT_MAP, $trace_id);
 $serverSpan = $tracer->startSpan('bar HTTP', ['child_of' => $spanContext]);
 
-$injectTarget1 = [];
 $clientSapn1 = $tracer->startSpan('HTTP1', ['child_of' => $serverSpan->getContext()]);
 
 $method = 'GET';

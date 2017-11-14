@@ -6,7 +6,7 @@ use Jaeger\Helper;
 
 class ConstSampler implements Sampler
 {
-    private $decision = '';
+    private $decision = false;
 
     private $tags = [];
 

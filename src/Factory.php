@@ -31,7 +31,7 @@ class Factory
     /**
      * @var Jaeger[]
      */
-    private static $trace = [];
+    private $trace = [];
 
     private static $instance;
 
@@ -62,8 +62,8 @@ class Factory
             throw new \InvalidArgumentException("serverName required");
         }
 
-        if (!empty(self::$trace[$serverName])) {
-            return self::$trace[$serverName];
+        if (!empty($this->trace[$serverName])) {
+            return $this->trace[$serverName];
         }
 
         if (!$this->transport) {
@@ -80,7 +80,7 @@ class Factory
 
         $trace = new Jaeger($serverName, $this->reporter, $this->sampler);
 
-        self::$trace[$serverName] = $trace;
+        $this->trace[$serverName] = $trace;
 
         return $trace;
     }

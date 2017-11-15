@@ -29,9 +29,9 @@ class Factory
     private $sampler;
 
     /**
-     * @var Jaeger[]
+     * @var Tracer[]
      */
-    private $trace = [];
+    private $tracers = [];
 
     private static $instance;
 
@@ -62,8 +62,8 @@ class Factory
             throw new \InvalidArgumentException("serverName required");
         }
 
-        if (!empty($this->trace[$serverName])) {
-            return $this->trace[$serverName];
+        if (isset($this->tracers[$serverName])) {
+            return $this->tracers[$serverName];
         }
 
         if (!$this->transport) {
@@ -78,11 +78,11 @@ class Factory
             $this->sampler = new ConstSampler(true);
         }
 
-        $trace = new Jaeger($serverName, $this->reporter, $this->sampler);
+        $tracer = new Jaeger($serverName, $this->reporter, $this->sampler);
 
-        $this->trace[$serverName] = $trace;
+        $this->tracers[$serverName] = $tracer;
 
-        return $trace;
+        return $tracer;
     }
 
     public function setDisabled($disabled) : self

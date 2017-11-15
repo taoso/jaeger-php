@@ -12,7 +12,7 @@ $factory = Factory::getInstance();
 $tracer = $factory->initTracer('gift');
 
 $trace_id = $_SERVER['HTTP_MY_TRACE_ID'];
-$spanContext = $tracer->extract(Formats\TEXT_MAP, $trace_id);
+$spanContext = $tracer->extract(Formats\BINARY, $trace_id);
 $serverSpan = $tracer->startSpan('bar HTTP', ['child_of' => $spanContext]);
 
 $clientSapn1 = $tracer->startSpan('HTTP1', ['child_of' => $serverSpan->getContext()]);

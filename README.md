@@ -25,7 +25,7 @@ composer update
 ```php
 <?php
 use Jaeger\Factory;
-use OpenTracing\Carriers\TextMap;
+use OpenTracing\Formats;
 
 // init factory
 $factory = Factory::getInstance();
@@ -33,14 +33,10 @@ $factory = Factory::getInstance();
 $tracer = $factory->initTracer('user');
 
 // extract parent infomation from http header
-// 
-// carrier need a key to store the trace infomation
-// however, this key does not defined in the OpenTracing specification
-// so you code could depends on the vendor defined key
-// in jaeger-php, this key has been defined as **Uber-Trace-Id**
-$carrier = TextMap::fromArray([\Jaeger\Helper::TRACE_HEADER_NAME => $_SERVER['HTTP_UBER_TRACE_ID']]);
+$carrier = $_SERVER['HTTP_UBER_TRACE_ID'];
 // extract the infomation and generate a new context
-$context = $tracer->extract('text_map', $carrier);
+// only support binary carrier now
+$context = $tracer->extract(Formats\BINARY, $carrier);
 
 // make a new span
 $span = $tracer->startSpan('foo', ['child_of' => $context]);

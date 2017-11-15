@@ -82,22 +82,22 @@ class Jaeger implements Tracer
 
     public function inject(SpanContext $spanContext, $format, &$carrier)
     {
-        if ($format == Formats\TEXT_MAP) {
+        if ($format == Formats\BINARY) {
             $carrier = $spanContext->buildString();
         } else {
-            throw new Exception("not support format");
+            throw new \Exception("not support format $format");
         }
     }
 
     public function extract($format, $carrier)
     {
-        if ($format == Formats\TEXT_MAP && is_string($carrier)) {
+        if ($format == Formats\BINARY && is_string($carrier)) {
             list($traceId, $spanId, $parentId, $flags) = explode(':', $carrier);
             return new JSpanContext($traceId, $spanId, $parentId, $flags);
 
             return new JSpanContext(0, 0, 0, 0);
         } else {
-            throw new Exception("not support format");
+            throw new \Exception("not support format $format");
         }
     }
 

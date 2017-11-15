@@ -15,7 +15,7 @@ $serverSpan = $tracer->startSpan('example HTTP', []);
 $client = new Client;
 $clientSapn = $tracer->startSpan('get', ['child_of' => $serverSpan]);
 
-$tracer->inject($clientSapn->getContext(), Formats\TEXT_MAP, $trace_id);
+$tracer->inject($clientSapn->getContext(), Formats\BINARY, $trace_id);
 
 $url = 'http://127.0.0.1:8080';
 $result = $client->get($url, ['headers' => [ 'My-Trace-Id' => $trace_id ]]);
@@ -42,4 +42,4 @@ $clientSapn->finish();
 $serverSpan->finish();
 $tracer->flush();
 
-echo "success\r\n";
+echo "$trace_id\r\n";

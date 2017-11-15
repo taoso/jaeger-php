@@ -11,20 +11,20 @@ class RemoteReporter implements Reporter
     /**
      * @var Transport
      */
-    public $tran = null;
+    private $transport;
 
-    public function __construct(Transport $tran)
+    public function __construct(Transport $transport)
     {
-        $this->tran = $tran;
+        $this->transport= $transport;
     }
 
     public function report(Jaeger $jaeger)
     {
-        $this->tran->append($jaeger);
+        $this->transport->append($jaeger);
     }
 
     public function close()
     {
-        $this->tran->flush();
+        $this->transport->flush();
     }
 }

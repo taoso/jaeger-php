@@ -45,11 +45,6 @@ class Jaeger implements Tracer
         return $this->serverName;
     }
 
-    public function getTags()
-    {
-        return $this->tags;
-    }
-
     public function startSpan($operationName, $options = [])
     {
         if (is_array($options)) {
@@ -130,7 +125,7 @@ class Jaeger implements Tracer
         }
 
         $tagsObj = Tags::getInstance();
-        $tagsObj->setTags($this->getTags());
+        $tagsObj->setTags($this->tags);
         $thriftTags = $tagsObj->buildTags();
 
         $this->processThrift = [

@@ -16,9 +16,8 @@ Feel free to choose this repo or Jukylin's.
 
 ```
 composer config minimum-stability dev
-composer config prefer-stable
+composer config prefer-stable 1
 composer require lvht/jaeger
-composer update
 ```
 
 ## Usage

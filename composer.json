@@ -3,8 +3,6 @@
     "description": "php client for jaeger",
     "keywords": ["jaeger","trace","opentracing"],
     "license": "MIT",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "require": {
         "php": "^7",
         "packaged/thrift" : "0.10.0",

@@ -82,10 +82,14 @@ class Jaeger implements Tracer
     public function extract($format, $carrier)
     {
         if ($format == Formats\BINARY && is_string($carrier)) {
-            list($traceId, $spanId, $parentId, $flags) = explode(':', $carrier);
+            $parts = explode(':', $carrier);
+            if (count($parts) !== 4) {
+                return new JSpanContext(0, 0, 0, 0);
+            }
+
+            list($traceId, $spanId, $parentId, $flags) = $parts;
             return new JSpanContext($traceId, $spanId, $parentId, $flags);
 
-            return new JSpanContext(0, 0, 0, 0);
         } else {
             throw new \Exception("not support format $format");
         }

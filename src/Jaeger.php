@@ -55,12 +55,12 @@ class Jaeger implements Tracer
 
         if ($references) { // TODO support multiple references
             $parent = $references[0]->getContext();
-            $id = self::toHex(self::identifier());
+            $id = self::generateId();
 
             $context = new JSpanContext($parent->traceId, $id, $parent->spanId, $parent->flags);
         } else {
-            $traceId = $spanId = self::toHex(self::identifier());
-            $flags = (int)$this->sampler->IsSampled();
+            $traceId = $spanId = self::generateId();
+            $flags = (int) $this->sampler->isSampled();
 
             $context = new JSpanContext($traceId, $spanId, 0, $flags);
         }
@@ -136,17 +136,9 @@ class Jaeger implements Tracer
         return $this->processThrift;
     }
 
-    private static function identifier()
+    private static function generateId()
     {
-        return strrev(microtime(true) * 10000 . rand(1000, 9999));
-    }
-
-    private static function toHex($string1, $string2 = "")
-    {
-        if ($string2 == "") {
-            return sprintf("%x", $string1);
-        } else {
-            return sprintf("%x%016x", $string1, $string2);
-        }
+        $id = strrev(microtime(true) * 10000 . rand(1000, 9999));
+        return sprintf("%x", $id);
     }
 }

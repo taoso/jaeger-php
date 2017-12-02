@@ -4,8 +4,6 @@ namespace Jaeger;
 
 class Helper
 {
-    const UDP_PACKET_MAX_LENGTH = 65000;
-
     public static function microtimeToInt()
     {
         return intval(microtime(true) * 1000000);

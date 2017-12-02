@@ -2,7 +2,6 @@
 
 namespace Jaeger\Transport;
 
-use Jaeger\Helper;
 use Jaeger\Jaeger;
 use Jaeger\ThriftGen\Agent\AgentClient;
 use Jaeger\ThriftGen\Agent\Process;
@@ -14,6 +13,7 @@ use Thrift\Protocol\TCompactProtocol;
 class TransportUdp implements Transport
 {
     const EMITBATCHOVERHEAD = 30;
+    const PACKET_MAX_LENGTH = 65000;
 
     /**
      * @var TMemoryBuffer
@@ -41,7 +41,7 @@ class TransportUdp implements Transport
         $this->port = $port;
 
         if ($maxPacketSize == 0) {
-            $maxPacketSize = Helper::UDP_PACKET_MAX_LENGTH;
+            $maxPacketSize = self::PACKET_MAX_LENGTH;
         }
 
         self::$maxSpanBytes = $maxPacketSize - self::EMITBATCHOVERHEAD;
@@ -108,7 +108,7 @@ class TransportUdp implements Transport
         $ts->write($this->thriftProtocol);
         $len = $this->tranpsort->available();
         //获取后buf清空
-        $serializedThrift['wrote'] = $this->tranpsort->read(Helper::UDP_PACKET_MAX_LENGTH);
+        $serializedThrift['wrote'] = $this->tranpsort->read(self::PACKET_MAX_LENGTH);
 
         return $len;
     }
@@ -130,7 +130,7 @@ class TransportUdp implements Transport
 
     private function emitBatch($batch)
     {
-        $buildThrift = (new AgentClient())->buildThrift($batch);
+        $buildThrift = (new AgentClient())->buildThrift($batch, self::PACKET_MAX_LENGTH);
 
         $len = $buildThrift['len'] ?? 0;
 

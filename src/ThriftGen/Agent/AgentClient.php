@@ -1,7 +1,6 @@
 <?php
 namespace Jaeger\ThriftGen\Agent;
 
-use Jaeger\Helper;
 use Thrift\Transport\TMemoryBuffer;
 use Thrift\Protocol\TCompactProtocol;
 use Thrift\Type\TMessageType;
@@ -12,7 +11,7 @@ class AgentClient
 {
     private static $tptl = null;
 
-    public function buildThrift($batch)
+    public function buildThrift($batch, $packet_max_length)
     {
         $tran = new TMemoryBuffer();
         self::$tptl = new TCompactProtocol($tran);
@@ -26,7 +25,7 @@ class AgentClient
         self::$tptl->writeMessageEnd();
 
         $batchLen = $tran->available();
-        $batchThriftStr = $tran->read(Helper::UDP_PACKET_MAX_LENGTH);
+        $batchThriftStr = $tran->read($packet_max_length);
 
         return ['len' => $batchLen, 'thriftStr' => $batchThriftStr];
     }

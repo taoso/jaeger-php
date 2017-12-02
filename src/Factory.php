@@ -50,11 +50,18 @@ class Factory
      *
      * @throws \InvalidArgumentException
      */
-    public function initTracer(string $serverName,
-        string $host = '127.0.0.1', int $port = 6831) : Tracer
+    public function initTracer(string $serverName, string $host, int $port) : Tracer
     {
         if (!$serverName) {
-            throw new \InvalidArgumentException("serverName required");
+            throw new \InvalidArgumentException("\$serverName is required");
+        }
+
+        if (!$host) {
+            throw new \InvalidArgumentException("\$host is required");
+        }
+
+        if ($port < 0) {
+            throw new \InvalidArgumentException("\$port must greater than zero");
         }
 
         if (isset($this->tracers[$serverName])) {

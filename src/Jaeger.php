@@ -40,11 +40,6 @@ class Jaeger implements Tracer
         $this->tags = array_merge($this->tags, $this->sampler->getTags());
     }
 
-    public function getServerName()
-    {
-        return $this->serverName;
-    }
-
     public function startSpan($operationName, $options = [])
     {
         if (is_array($options)) {

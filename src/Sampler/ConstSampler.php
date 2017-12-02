@@ -2,8 +2,6 @@
 
 namespace Jaeger\Sampler;
 
-use Jaeger\Helper;
-
 class ConstSampler implements Sampler
 {
     private $decision = false;

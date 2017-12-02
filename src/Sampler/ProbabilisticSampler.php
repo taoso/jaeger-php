@@ -2,8 +2,6 @@
 
 namespace Jaeger\Sampler;
 
-use Jaeger\Helper;
-
 class ProbabilisticSampler implements Sampler
 {
     // min 0, max 1
@@ -14,8 +12,8 @@ class ProbabilisticSampler implements Sampler
     public function __construct($rate = 0.0001)
     {
         $this->rate = $rate;
-        $this->tags[Helper::SAMPLER_TYPE_TAG_KEY] = 'probabilistic';
-        $this->tags[Helper::SAMPLER_PARAM_TAG_KEY] = $rate;
+        $this->tags[self::SAMPLER_TYPE_TAG_KEY] = 'probabilistic';
+        $this->tags[self::SAMPLER_PARAM_TAG_KEY] = $rate;
     }
 
     public function isSampled()

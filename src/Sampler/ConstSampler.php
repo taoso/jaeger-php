@@ -13,8 +13,8 @@ class ConstSampler implements Sampler
     public function __construct($decision = true)
     {
         $this->decision = $decision;
-        $this->tags[Helper::SAMPLER_TYPE_TAG_KEY] = 'const';
-        $this->tags[Helper::SAMPLER_PARAM_TAG_KEY] = $decision;
+        $this->tags[self::SAMPLER_TYPE_TAG_KEY] = 'const';
+        $this->tags[self::SAMPLER_PARAM_TAG_KEY] = $decision;
     }
 
     public function isSampled()

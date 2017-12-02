@@ -6,7 +6,8 @@
     "require": {
         "php": "^7",
         "packaged/thrift" : "0.10.0",
-        "opentracing/opentracing" : "1.0.0-beta2"
+        "opentracing/opentracing" : "1.0.0-beta2",
+        "satooshi/php-coveralls": "^1.0"
     },
     "autoload": {
         "psr-4": {

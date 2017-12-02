@@ -3,7 +3,6 @@
 namespace Jaeger;
 
 use OpenTracing\Tracer;
-use OpenTracing\NoopTracer;
 use Jaeger\Reporter\Reporter;
 use Jaeger\Reporter\RemoteReporter;
 use Jaeger\Transport\Transport;
@@ -54,10 +53,6 @@ class Factory
     public function initTracer(string $serverName,
         string $host = '127.0.0.1', int $port = 6831) : Tracer
     {
-        if (self::$disabled) {
-            return NoopTracer::create();
-        }
-
         if (!$serverName) {
             throw new \InvalidArgumentException("serverName required");
         }
@@ -74,7 +69,9 @@ class Factory
             $this->reporter = new RemoteReporter($this->transport);
         }
 
-        if (!$this->sampler) {
+        if (self::$disabled) {
+            $this->sampler = new ConstSampler(false);
+        } elseif (!$this->sampler) {
             $this->sampler = new ConstSampler(true);
         }
 

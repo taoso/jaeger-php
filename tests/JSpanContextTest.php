@@ -22,5 +22,8 @@ class JSpanContextTest extends TestCase
         self::assertNotSame($context2, $context);
         self::assertSame(1, $context2->getBaggageItem('a'));
         self::assertSame(null, $context->getBaggageItem('a'));
+
+        $context3 = $context2->withBaggageItem('a', 1);
+        self::assertSame($context2, $context3);
     }
 }

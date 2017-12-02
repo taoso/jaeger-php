@@ -39,6 +39,10 @@ class JSpanContext implements SpanContext
      */
     public function withBaggageItem($key, $value)
     {
+        if ($this->getBaggageItem($key) === $value) {
+            return $this;
+        }
+
         $ctx = clone $this;
         $ctx->$key = $value;
 

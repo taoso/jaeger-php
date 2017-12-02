@@ -27,7 +27,7 @@ class JSpan implements Span
     public function __construct($operationName, SpanContext $spanContext)
     {
         $this->operationName = $operationName;
-        $this->startTime = Helper::microtimeToInt();
+        $this->startTime = self::microtimeToInt();
         $this->spanContext = $spanContext;
     }
 
@@ -43,7 +43,7 @@ class JSpan implements Span
 
     public function finish($finishTime = null, array $logRecords = [])
     {
-        $this->finishTime = $finishTime == null ? Helper::microtimeToInt() : $finishTime;
+        $this->finishTime = $finishTime ?: self::microtimeToInt();
         $this->duration = $this->finishTime - $this->startTime;
     }
 
@@ -59,7 +59,7 @@ class JSpan implements Span
 
     public function log(array $fields = [], $timestamp = null)
     {
-        $log['timestamp'] = $timestamp ? $timestamp : Helper::microtimeToInt();
+        $log['timestamp'] = $timestamp ? $timestamp : self::microtimeToInt();
         $log['fields'] = $fields;
 
         $this->logs[] = $log;
@@ -133,5 +133,10 @@ class JSpan implements Span
         }
 
         return $resultLogs;
+    }
+
+    private static function microtimeToInt()
+    {
+        return intval(microtime(true) * 1000000);
     }
 }

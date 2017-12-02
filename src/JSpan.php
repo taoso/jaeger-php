@@ -16,6 +16,9 @@ class JSpan implements Span
 
     private $spanKind;
 
+    /**
+     * @var SpanContext
+     */
     private $spanContext;
 
     private $duration = 0;
@@ -67,12 +70,12 @@ class JSpan implements Span
 
     public function addBaggageItem($key, $value)
     {
-        // TODO
+        $this->spanContext = $this->spanContext->withBaggageItem($key, $value);
     }
 
     public function getBaggageItem($key)
     {
-        // TODO
+        return $this->spanContext->getBaggageItem($key);
     }
 
     public function buildThrift()

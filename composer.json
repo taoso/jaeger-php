@@ -6,8 +6,7 @@
     "require": {
         "php": "^7",
         "packaged/thrift" : "0.10.0",
-        "opentracing/opentracing" : "1.0.0-beta2",
-        "satooshi/php-coveralls": "^1.0"
+        "opentracing/opentracing" : "1.0.0-beta2"
     },
     "autoload": {
         "psr-4": {
@@ -22,7 +21,8 @@
     "require-dev": {
         "guzzlehttp/guzzle": "^6.3",
         "phpunit/phpunit": "^6.5",
-        "mockery/mockery": "^1.0"
+        "mockery/mockery": "^1.0",
+        "php-coveralls/php-coveralls": "^1.0"
     },
     "scripts": {
         "test": "./vendor/bin/phpunit"

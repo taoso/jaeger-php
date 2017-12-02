@@ -60,7 +60,7 @@ class Factory
             throw new \InvalidArgumentException("\$host is required");
         }
 
-        if ($port < 0) {
+        if ($port <= 0) {
             throw new \InvalidArgumentException("\$port must greater than zero");
         }
 

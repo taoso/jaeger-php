@@ -34,6 +34,9 @@ class JSpanContext implements SpanContext
         return $this->$key ?? null;
     }
 
+    /**
+     * @return $this
+     */
     public function withBaggageItem($key, $value)
     {
         $ctx = clone $this;
@@ -44,7 +47,7 @@ class JSpanContext implements SpanContext
 
     public function getIterator()
     {
-        return new ArrayIterator($this);
+        return new \ArrayIterator($this);
     }
 
     public function buildString()

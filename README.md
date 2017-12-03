@@ -32,7 +32,7 @@ use OpenTracing\Formats;
 // init factory
 $factory = Factory::getInstance();
 // make OpenTracing\Tracer instance
-$tracer = $factory->initTracer('user');
+$tracer = $factory->initTracer('user', '127.0.0.1', 6831);
 
 // extract parent infomation from http header
 $carrier = $_SERVER['HTTP_UBER_TRACE_ID'];

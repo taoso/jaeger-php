@@ -8,7 +8,7 @@ use OpenTracing\Formats;
 //init server span start
 $factory = Factory::getInstance();
 
-$tracer = $factory->initTracer('user');
+$tracer = $factory->initTracer('user', '127.0.0.1', 6831);
 
 $serverSpan = $tracer->startSpan('example HTTP', []);
 

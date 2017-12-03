@@ -9,7 +9,7 @@ use OpenTracing\Formats;
 //init server span start
 $factory = Factory::getInstance();
 
-$tracer = $factory->initTracer('gift');
+$tracer = $factory->initTracer('gift', '127.0.0.1', 6831);
 
 $trace_id = $_SERVER['HTTP_MY_TRACE_ID'];
 $spanContext = $tracer->extract(Formats\BINARY, $trace_id);

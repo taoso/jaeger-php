@@ -6,7 +6,7 @@ use Jaeger\Jaeger;
 use Jaeger\Thrift\Batch;
 use Jaeger\Thrift\Agent\AgentIf;
 use Jaeger\Thrift\Agent\AgentClient;
-use Thrift\Transport\TSocket;
+use Thrift\Transport\TMemoryBuffer;
 use Thrift\Protocol\TCompactProtocol;
 use Thrift\Protocol\TProtocol;
 
@@ -23,6 +23,13 @@ class TransportUdp implements Transport
     private $port;
 
     private $bufferSize = 0;
+
+    private $socket;
+
+    /**
+     * @var TMemoryBuffer
+     */
+    private $transport;
 
     /**
      * @var TProtocol
@@ -52,6 +59,8 @@ class TransportUdp implements Transport
         $this->host = $host;
         $this->port = $port;
 
+        $this->socket = fsockopen("udp://$host", $port);
+
         if ($maxPacketSize == 0) {
             $maxPacketSize = self::PACKET_MAX_LENGTH;
         }
@@ -61,8 +70,8 @@ class TransportUdp implements Transport
             throw new \InvalidArgumentException('$maxPacketSize must be greater than '.self::EMITBATCHOVERHEAD);
         }
 
-        $socket = new TSocket('udp://'.$host, $port);
-        $this->agent = new AgentClient(null, new TCompactProtocol($socket));
+        $this->transport = new TMemoryBuffer;
+        $this->agent = new AgentClient(null, new TCompactProtocol($this->transport));
 
         $this->protocol = new TCompactProtocol(new TEmptyMemoryBuffer());
     }
@@ -103,7 +112,11 @@ class TransportUdp implements Transport
         }
 
         $this->agent->emitBatch($this->batch);
+        $this->batch = null;
         $this->bufferSize = 0;
+
+        $buf = $this->transport->read(self::PACKET_MAX_LENGTH);
+        fwrite($this->socket, $buf);
     }
 
     public function getBufferSize($thrift)

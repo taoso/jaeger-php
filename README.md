@@ -1,5 +1,8 @@
 # jaeger-php
 
+[![Build Status](https://travis-ci.org/lvht/jaeger-php.svg?branch=master)](https://travis-ci.org/lvht/jaeger-php)
+[![Coverage Status](https://coveralls.io/repos/github/lvht/jaeger-php/badge.svg?branch=master)](https://coveralls.io/github/lvht/jaeger-php?branch=master)
+
 Jaeger UDP client for PHP OpenTracing API.
 
 Forked from [jukylin/jaeger-php](https://github.com/jukylin/jaeger-php).

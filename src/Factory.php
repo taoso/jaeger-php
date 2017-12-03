@@ -34,7 +34,7 @@ class Factory
 
     private static $instance;
 
-    private static $disabled = false;
+    private $disabled = false;
 
     public static function getInstance() : self
     {
@@ -76,7 +76,7 @@ class Factory
             $this->reporter = new RemoteReporter($this->transport);
         }
 
-        if (self::$disabled) {
+        if ($this->disabled) {
             $this->sampler = new ConstSampler(false);
         } elseif (!$this->sampler) {
             $this->sampler = new ConstSampler(true);
@@ -91,7 +91,7 @@ class Factory
 
     public function setDisabled($disabled) : self
     {
-        self::$disabled = $disabled;
+        $this->disabled = $disabled;
 
         return $this;
     }
@@ -106,6 +106,13 @@ class Factory
     public function setSampler(Sampler $sampler) : self
     {
         $this->sampler = $sampler;
+
+        return $this;
+    }
+
+    public function setReporter(Reporter $reporter)
+    {
+        $this->reporter = $reporter;
 
         return $this;
     }

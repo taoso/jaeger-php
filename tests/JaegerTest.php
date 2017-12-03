@@ -27,7 +27,11 @@ class JaegerTest extends TestCase
                     'a' => 1,
                 ]);
 
-        return new Jaeger('foo', $reporter, $sampler);
+        $factory = new Factory;
+        $factory->setSampler($sampler);
+        $factory->setReporter($reporter);
+
+        return $factory->initTracer('foo', '127.0.0.1', 1024);
     }
 
     public function testNew()

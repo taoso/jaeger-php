@@ -49,6 +49,15 @@ class JaegerTest extends TestCase
         self::assertEquals('1:1:1:1', $string);
     }
 
+    public function testInjectUnsupportFormat()
+    {
+        $context = new JSpanContext(1, 1, 1, 1);
+        $tracer = $this->getTracer();
+        $string = '';
+        $this->expectExceptionMessage('not support format text_map');
+        $tracer->inject($context, Formats\TEXT_MAP, $string);
+    }
+
     public function testExtract()
     {
         $tracer = $this->getTracer();
@@ -61,6 +70,13 @@ class JaegerTest extends TestCase
             'parentId' => 1,
             'flags'    => 1,
         ], $data);
+    }
+
+    public function testExtractUnsupportedFormat()
+    {
+        $tracer = $this->getTracer();
+        $this->expectExceptionMessage('not support format text_map');
+        $context = $tracer->extract(Formats\TEXT_MAP, '1:1:1:1');
     }
 
     public function testExtractEmpty()
@@ -83,5 +99,77 @@ class JaegerTest extends TestCase
 
         $span = $tracer->startSpan('foo');
         self::assertNotEmpty($tracer->getSpans());
+    }
+
+    public function testStartSpanWithParent()
+    {
+        $tracer = $this->getTracer();
+
+        $span = $tracer->startSpan('foo');
+        $context = $span->getContext();
+
+        $span2 = $tracer->startSpan('bar', ['child_of' => $span->getContext()]);
+        $context2 = $span2->getContext();
+
+        self::assertEquals($context->traceId, $context2->traceId);
+        self::assertEquals($context->spanId, $context2->parentId);
+    }
+
+    public function testFlush()
+    {
+        static $tracer;
+
+        $reporter = m::mock(Reporter::class);
+        $reporter->shouldReceive('report')
+                ->once()
+                ->andReturnUsing(function ($jaeger) use(&$tracer) {
+                    self::assertSame($tracer, $jaeger);
+                });
+        $reporter->shouldReceive('close')
+                ->once()
+                ->andReturnTrue();
+
+        $sampler = m::mock(Sampler::class);
+        $sampler->shouldReceive('isSampled')
+                ->once()
+                ->andReturnTrue();
+
+        $sampler->shouldReceive('getTags')
+                ->once()
+                ->andReturn([ 'a' => 1 ]);
+
+        $factory = new Factory;
+        $factory->setSampler($sampler);
+        $factory->setReporter($reporter);
+
+        $tracer = $factory->initTracer('foo', '127.0.0.1', 1024);
+
+        $span = $tracer->startSpan('foo');
+
+        $tracer->flush();
+        self::assertEmpty($tracer->getSpans());
+    }
+
+    public function testBuildProcessThrift()
+    {
+        $tracer = $this->getTracer();
+
+        $span = $tracer->startSpan('foo', ['tags' => ['c' => 3]]);
+        $span->finish();
+        self::assertEquals(['c' => 3], $span->getTags());
+
+        $data = $tracer->buildProcessThrift();
+
+        self::assertEquals([
+            'serverName' => 'foo',
+            'tags' => [
+                [
+                    'key' => 'a',
+                    'vType' => 'DOUBLE',
+                    'vDouble' => 1,
+                ],
+            ],
+        ], $data);
+        self::assertEquals($data, $tracer->buildProcessThrift());
     }
 }

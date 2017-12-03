@@ -60,6 +60,11 @@ class JSpan implements Span
         $this->tags = array_merge($this->tags, $tags);
     }
 
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
     public function log(array $fields = [], $timestamp = null)
     {
         $log['timestamp'] = $timestamp ? $timestamp : self::microtimeToInt();

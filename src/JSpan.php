@@ -4,10 +4,15 @@ namespace Jaeger;
 
 use OpenTracing\Span;
 use OpenTracing\SpanContext;
-use Jaeger\ThriftGen\Agent\Tags;
+use Jaeger\Thrift\Log;
+use Jaeger\Thrift\Span as SpanThrift;
+use Jaeger\Thrift\SpanRef;
+use Jaeger\Thrift\SpanRefType;
 
 class JSpan implements Span
 {
+    use ThriftTags;
+
     private $operationName;
 
     private $startTime;
@@ -73,6 +78,19 @@ class JSpan implements Span
         $this->logs[] = $log;
     }
 
+    private function buildLogThrift()
+    {
+        $thriftLogs = [];
+        foreach ($this->logs as $log) {
+            $thriftLogs[] = new Log([
+                'timestamp' => $log['timestamp'],
+                'fields' => $this->buildTags($log['fields']),
+            ]);
+        }
+
+        return $thriftLogs;
+    }
+
     public function addBaggageItem($key, $value)
     {
         $this->spanContext = $this->spanContext->withBaggageItem($key, $value);
@@ -83,7 +101,7 @@ class JSpan implements Span
         return $this->spanContext->getBaggageItem($key);
     }
 
-    public function buildThrift()
+    public function buildThrift() : SpanThrift
     {
         $context = $this->spanContext;
         $span = [
@@ -95,52 +113,22 @@ class JSpan implements Span
             'flags' => intval($context->flags),
             'startTime' => $this->startTime,
             'duration' => $this->duration,
-            'tags' => self::buildTags($this->tags),
-            'logs' => self::buildLogs($this->logs),
+            'tags' => $this->buildTags($this->tags),
+            'logs' => $this->buildLogThrift(),
         ];
 
         if ($context->parentId != 0) {
             $span['references'] = [
-                [
-                    'refType' => 1,
+                new SpanRef([
+                    'refType' => SpanRefType::CHILD_OF,
                     'traceIdLow' => hexdec($context->traceId),
                     'traceIdHigh' => 0, // TODO support 128bit trace id
                     'spanId' => hexdec($context->parentId),
-                ],
+                ]),
             ];
         }
 
-        return $span;
-    }
-
-    private static function buildTags($tags)
-    {
-        $resultTags = [];
-        if ($tags) {
-            $tagsObj = Tags::getInstance();
-            $tagsObj->setTags($tags);
-            $resultTags = $tagsObj->buildTags();
-        }
-
-        return $resultTags;
-    }
-
-    private static function buildLogs($logs)
-    {
-        $resultLogs = [];
-        if ($logs) {
-            $tagsObj = Tags::getInstance();
-            foreach ($logs as $log) {
-                $tagsObj->setTags($log['fields']);
-                $fields = $tagsObj->buildTags();
-                $resultLogs[] = [
-                    "timestamp" => $log['timestamp'],
-                    "fields" => $fields,
-                ];
-            }
-        }
-
-        return $resultLogs;
+        return new SpanThrift($span);
     }
 
     private static function microtimeToInt()

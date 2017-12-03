@@ -16,6 +16,12 @@
         </testsuite>
     </testsuites>
     <filter>
+        <blacklist>
+            <file>./src/Reporter/Reporter.php</file>
+            <file>./src/Sampler/Sampler.php</file>
+            <file>./src/Transport/Transport.php</file>
+        </blacklist>
+
         <whitelist>
             <directory suffix=".php">./src</directory>
         </whitelist>

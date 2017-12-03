@@ -50,10 +50,10 @@ class Factory
      *
      * @throws \InvalidArgumentException
      */
-    public function initTracer(string $serverName, string $host, int $port) : Tracer
+    public function initTracer(string $serviceName, string $host, int $port) : Tracer
     {
-        if (!$serverName) {
-            throw new \InvalidArgumentException("\$serverName is required");
+        if (!$serviceName) {
+            throw new \InvalidArgumentException("\$serviceName is required");
         }
 
         if (!$host) {
@@ -64,8 +64,8 @@ class Factory
             throw new \InvalidArgumentException("\$port must greater than zero");
         }
 
-        if (isset($this->tracers[$serverName])) {
-            return $this->tracers[$serverName];
+        if (isset($this->tracers[$serviceName])) {
+            return $this->tracers[$serviceName];
         }
 
         if (!$this->transport) {
@@ -82,9 +82,9 @@ class Factory
             $this->sampler = new ConstSampler(true);
         }
 
-        $tracer = new Jaeger($serverName, $this->reporter, $this->sampler);
+        $tracer = new Jaeger($serviceName, $this->reporter, $this->sampler);
 
-        $this->tracers[$serverName] = $tracer;
+        $this->tracers[$serviceName] = $tracer;
 
         return $tracer;
     }
@@ -96,7 +96,7 @@ class Factory
         return $this;
     }
 
-    public function setTransport(Transport\Transport $transport) : self
+    public function setTransport(Transport $transport) : self
     {
         $this->transport = $transport;
 

@@ -5,8 +5,8 @@
     "license": "MIT",
     "require": {
         "php": "^7",
-        "packaged/thrift" : "0.10.0",
-        "opentracing/opentracing" : "1.0.0-beta2"
+        "lvht/jaeger-idl" : "^0.9.0",
+        "opentracing/opentracing" : "^1.0.0-beta2"
     },
     "autoload": {
         "psr-4": {

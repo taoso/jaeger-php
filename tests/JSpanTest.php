@@ -2,6 +2,8 @@
 namespace Jaeger;
 
 use PHPUnit\Framework\TestCase;
+use Jaeger\Thrift\SpanRefType;
+use Jaeger\Thrift\TagType;
 
 function microtime()
 {
@@ -32,6 +34,14 @@ class JSpanTest extends TestCase
 
         $span->finish();
 
+        $thrift = (array) $span->buildThrift();
+
+        $references = $thrift['references']; unset($thrift['references']);
+
+        $tags = $thrift['tags']; unset($thrift['tags']);
+
+        $logs = $thrift['logs']; unset($thrift['logs']);
+
         self::assertEquals([
             'traceIdLow' => 1,
             'traceIdHigh' => 0,
@@ -41,33 +51,25 @@ class JSpanTest extends TestCase
             'startTime' => 0,
             'duration' => 2000000,
             'flags' => 1,
-            'references' => [
-                [
-                    'refType' => 1,
-                    'traceIdLow' => 1,
-                    'traceIdHigh' => 0,
-                    'spanId' => 1,
-                ]
-            ],
-            'tags' => [
-                [
-                    'key' => 'a',
-                    'vType' =>  'DOUBLE',
-                    'vDouble' => 1,
-                ],
-            ],
-            'logs' => [
-                [
-                    'timestamp' => 1000000,
-                    'fields' => [
-                        [
-                            'key' => 'b',
-                            'vType' =>  'DOUBLE',
-                            'vDouble' => 2,
-                        ]
-                    ]
-                ],
-            ],
-        ], $span->buildThrift());
+        ], $thrift);
+
+        self::assertEquals([
+            'refType' => SpanRefType::CHILD_OF,
+            'traceIdLow' => 1,
+            'traceIdHigh' => 0,
+            'spanId' => 1,
+        ], (array)$references[0]);
+
+        $tag = $tags[0];
+        self::assertEquals('a', $tag->key);
+        self::assertEquals(TagType::LONG, $tag->vType);
+        self::assertEquals(1, $tag->vLong);
+
+        $log = $logs[0];
+        self::assertEquals(1000000, $log->timestamp);
+        $tag = $log->fields[0];
+        self::assertEquals('b', $tag->key);
+        self::assertEquals(TagType::LONG, $tag->vType);
+        self::assertEquals(2, $tag->vLong);
     }
 }

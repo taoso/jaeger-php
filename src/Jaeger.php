@@ -7,12 +7,15 @@ use OpenTracing\SpanContext;
 use OpenTracing\SpanOptions;
 use OpenTracing\Formats;
 use OpenTracing\Tracer;
+use Jaeger\Thrift\Process;
+use Jaeger\Thrift\Batch;
 use Jaeger\Sampler\Sampler;
 use Jaeger\Reporter\Reporter;
-use Jaeger\ThriftGen\Agent\Tags;
 
 class Jaeger implements Tracer
 {
+    use ThriftTags;
+
     /**
      * @var Reporter
      */
@@ -25,19 +28,25 @@ class Jaeger implements Tracer
 
     private $spans = [];
 
-    private $tags = [];
+    private $tags;
 
-    private $serverName;
+    private $serviceName;
 
-    private $processThrift;
-
-    public function __construct(string $serverName, Reporter $reporter, Sampler $sampler)
+    public function __construct(string $serviceName, Reporter $reporter, Sampler $sampler)
     {
-        $this->serverName = $serverName;
+        $this->serviceName = $serviceName;
         $this->reporter = $reporter;
         $this->sampler = $sampler;
 
-        $this->tags = array_merge($this->tags, $this->sampler->getTags());
+        $this->tags = $this->sampler->getTags();
+    }
+
+    public function buildProcessThrift() : Process
+    {
+        return new Process([
+            'serviceName' => $this->serviceName,
+            'tags' => $this->buildTags($this->tags),
+        ]);
     }
 
     public function startSpan($operationName, $options = [])
@@ -103,6 +112,16 @@ class Jaeger implements Tracer
         return $this->spans;
     }
 
+    public function buildThrift() : Batch
+    {
+        $spans = [];
+        foreach ($this->spans as $span) {
+            $spans[] = $span->buildThrift();
+        }
+
+        return new Batch(['process' => $this->buildProcessThrift(), 'spans' => $spans]);
+    }
+
     public function reportSpan()
     {
         if ($this->spans) {
@@ -115,24 +134,6 @@ class Jaeger implements Tracer
     {
         $this->reportSpan();
         $this->reporter->close();
-    }
-
-    public function buildProcessThrift()
-    {
-        if ($this->processThrift) {
-            return $this->processThrift;
-        }
-
-        $tagsObj = Tags::getInstance();
-        $tagsObj->setTags($this->tags);
-        $thriftTags = $tagsObj->buildTags();
-
-        $this->processThrift = [
-            'serverName' => $this->serverName,
-            'tags' => $thriftTags,
-        ];
-
-        return $this->processThrift;
     }
 
     private static function generateId()

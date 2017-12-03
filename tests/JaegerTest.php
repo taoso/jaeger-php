@@ -7,6 +7,7 @@ use Jaeger\Sampler\Sampler;
 use Jaeger\Reporter\Reporter;
 use OpenTracing\Tracer;
 use OpenTracing\Formats;
+use Jaeger\Thrift\TagType;
 
 class JaegerTest extends TestCase
 {
@@ -158,18 +159,14 @@ class JaegerTest extends TestCase
         $span->finish();
         self::assertEquals(['c' => 3], $span->getTags());
 
-        $data = $tracer->buildProcessThrift();
+        $process = $tracer->buildProcessThrift();
 
-        self::assertEquals([
-            'serverName' => 'foo',
-            'tags' => [
-                [
-                    'key' => 'a',
-                    'vType' => 'DOUBLE',
-                    'vDouble' => 1,
-                ],
-            ],
-        ], $data);
-        self::assertEquals($data, $tracer->buildProcessThrift());
+        self::assertEquals('foo', $process->serviceName);
+        self::assertEquals(1, count($process->tags));
+
+        $tag = $process->tags[0];
+        self::assertEquals('a', $tag->key);
+        self::assertEquals(TagType::LONG, $tag->vType);
+        self::assertEquals(1, $tag->vLong);
     }
 }

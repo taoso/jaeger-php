@@ -10,7 +10,7 @@ class FactoryTest extends TestCase
     public function testInitTracerServerName()
     {
         $factory = Factory::getInstance();
-        $this->expectExceptionMessage('$serverName is required');
+        $this->expectExceptionMessage('$serviceName is required');
         $tracer = $factory->initTracer('', '', 0);
     }
 

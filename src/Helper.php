@@ -19,7 +19,8 @@ class Helper
 
     public static function identifier()
     {
-        return strrev(microtime(true) * 10000 . rand(1000, 9999));
+        $t = intval(microtime(true) * 1000) & 0xFFFFFFFF;
+        return ($t << 31) + rand(0, 1 << 31);
     }
 
     /**

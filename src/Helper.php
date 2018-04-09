@@ -20,7 +20,7 @@ class Helper
     public static function identifier()
     {
         $t = intval(microtime(true) * 1000) & 0xFFFFFFFF;
-        return ($t << 31) + mt_rand(0, 1 << 31);
+        return ($t << 31) | mt_rand(0, 1 << 31);
     }
 
     /**
